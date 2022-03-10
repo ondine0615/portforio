@@ -62,4 +62,9 @@ tar xvf kafka_2.13-3.0.0.tgz
 
 - 그 이후 producer.conf를 편집합니다. 
 
-5. Produ
+- 이후 logstash -f producer.conf 로 실행시키고, consumer 을 통해 출력되는 것을 확인합니다.
+
+- producer과 consumer 사이에 원하는 방향에 따라 프로그램을 배치할 수 있습니다. 
+
+
+
