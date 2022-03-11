@@ -1,0 +1,30 @@
+# filebeat를 설치하신 뒤, /etc/filebeat 경로에 들어가서 filebeat.yml을 열어서 수정해야 합니다. 
+
+filebeat.inputs:
+
+# Each - is an input. Most options can be set at the input level, so
+# you can use different inputs for various configurations.
+# Below are the input specific configurations.
+
+# filestream is an input for collecting log messages from files.
+- type: log
+
+  # Change to true to enable this input configuration.
+  enabled: true
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /home/원하는/경로에/로그파일/넣어서/가지고오기.log 
+
+
+# ------------------------------ Kafka Output ----------------------------
+output.kafka:
+
+        hosts: ["localhost:9092"]
+        topic: "chat-log"
+        codec.json:
+                pretty: true
+                escape_html: true
+
+        required_acks: 1
+        compression: gzip
