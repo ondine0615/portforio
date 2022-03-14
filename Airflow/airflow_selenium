@@ -7,6 +7,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from pyvirtualdisplay import Display
+import chromedriver_autoinstaller
 
 from pandas import json_normalize
 import pandas as pd
