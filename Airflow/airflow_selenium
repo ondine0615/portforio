@@ -13,7 +13,8 @@ from pandas import json_normalize
 import pandas as pd
 
 from datetime import datetime
-#import datetime
+import datetime
+
 
 from email.policy import default
 import imp
@@ -26,9 +27,9 @@ def _pulling_data(yesterday):
     display = Display(visible=0, size=(1920, 1080)) 
     display.start() 
     
-    # chromedriver을 같은 폴더 내에 저장해 놓음
-    path='/home/ondine0615/airflow/dag/chromedriver' 
-    browser = webdriver.Chrome(path)
+    chromedriver_autoinstaller.install()   
+    #path='/home/ondine0615/airflow/dag/chromedriver' 
+    browser = webdriver.Chrome()
     
     today = datetime.date.today()
     yesday=today-datetime.timedelta(1)
