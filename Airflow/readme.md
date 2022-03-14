@@ -10,6 +10,7 @@ Company Guide 에서 제공하는 기업 정보와 한국신용평가에서 제�
 **  airflow를 통한 scheduling이 필요합니다.     
 **  계산은 컴퓨터가 해주지만, 투자 판단은 본인이 직접 하셔야 합니다.     
 **  학습 과정에서 제작한 코드입니다. 적절한 판단이 필요합니다.    
+**  전날이 공휴일이였다거나 주말이었다면 날짜를 금요일로 바꿔주셔야 합니다. 
 **  본 코드는 Ubuntu20.04 server 상에서 제작되었습니다. 윈도우와 달리 따로 import 할 것들이 필요합니다.
 - from selenium.webdriver.common.by import By  
 - from pyvirtualdisplay import Display     
