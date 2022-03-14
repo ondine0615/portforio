@@ -16,7 +16,7 @@ Company Guide 에서 제공하는 기업 정보와 한국신용평가에서 제�
 - from pyvirtualdisplay import Display     
 - 사용방법과 설치방법은 이를 구글링하면 바로 나올 것입니다.   
 ( ** Chromedriver 관련해서 번거로운 것이 싫다면, 그냥 자동으로 버전을 찾아 드라이버를 적용시켜주는 패키지를 사용하셔도 무방합니다. 실제로 이번 기회에 사용해 보았는데 일회성으로 사용하기에 좋았습니다. 다만 지속적으로 셀레니움을 사용할 일이 있다면 driver을 다운받아 경로를 지정해 주시는게 좋지 않을까 싶습니다.  
-다운은 [ pip install chromedriver-autoinstaller] 을 통해 가능합니다. 
+설치는 [ pip install chromedriver-autoinstaller] 을 통해 가능합니다. 
 
 
 #-------------------------------------------------
