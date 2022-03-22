@@ -3,7 +3,6 @@
 
 - AWS ec2 서비스를 기반으로 실행한다면 Amazon Linux 서비스를 기반으로 구축하거나, 따로 하드웨어에 서버를 설치하고자 한다면 rocky-linux를 통해 보다 편하게 진행할 수 있습니다.
 - 레드헷 공식 홈페이지에서 개발전용 무료 프로그램을 등록한 뒤 설치해도 좋습니다. 
-  - Amazon Linux는 centos를 기반으로, rocky-Linux는 centos의 서비스 종료에 시작된 소프트웨어입니다.
   - 데비안 계열 소프트웨어를 사용하실 때에는 그에 따라 조금 달리 실행하셔야 합니다.
   - Kali-Linux 다운로드 링크(https://rockylinux.org/download/)
   - RED HAT ENTERPRISE LINUX 다운로드 가이드(https://access.redhat.com/documentation/ko-kr/red_hat_enterprise_linux/7/html/installation_guide/chap-download-red-hat-enterprise-linux)
