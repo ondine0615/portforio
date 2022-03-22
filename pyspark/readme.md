@@ -7,3 +7,5 @@ cluster.csv 파일 정보
 3. 예측모델로 도출된 인사이트와 통계를 이용해 매출감소고객들의 패턴을 분석하고자 했습니다. 
 
 - 활용 방안은, 공통 특성을 가지고 있는 고객들의 행동 패턴을 파악하고, 이에 대응하는 가이드라인을 만드는 것입니다. 
+
+- pyspark는 jupyter/pyspark-notebook docker image를 활용해 실행시켰습니다.(https://hub.docker.com/r/jupyter/pyspark-notebook)
