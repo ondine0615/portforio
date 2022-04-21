@@ -1,4 +1,4 @@
-# Airflow를 이용한 twitch emoji 자동 사용량 추적 파이프라인 구축
+# Airflow를 이용한 twitch emoji 자동 사용량 추적 파이프라인 구축( 자료 추후 수정) 
 
 ## 설명
 
