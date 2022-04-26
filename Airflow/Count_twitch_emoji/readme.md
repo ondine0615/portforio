@@ -41,7 +41,7 @@
 - ![image](https://user-images.githubusercontent.com/76681523/165246210-593f6b7c-8b36-41fd-a967-e40509fcb030.png) 
   - SUPERSET 쿼리 결과 파일
 - ![image](https://user-images.githubusercontent.com/76681523/165255978-78fa6db7-ac05-47ab-8481-0f6f1a084fc4.png)
-  - 시각화   
+  - PIE 형태로 시각화   
 
 
 
