@@ -33,7 +33,7 @@
     - ![image](https://user-images.githubusercontent.com/76681523/165243274-c45f0314-8675-411c-bced-41e72ca293d5.png)
       - 앞서 볼 수 있었던 각종 채팅 로그들은 모두 삭제되고, 그 날 방송에서 사용된 이모티콘의 사용량만 추적한 것을 확인할 수 있습니다. 
 3. concat_csv.py
-- 처리를 끝낸 후 csv 파일들을 하나의 표로 구성합니다. 이는 db로 넘어가는 데이터의 바로 전 단계입니다.
+- 처리를 끝낸 후 폴더 내에 날짜별로 저장되어 있던 csv 파일들을 하나의 표로 합친 후 구해 놓았던 계산값들의 총합으로 구성합니다. 이는 db로 넘어가는 데이터의 바로 전 단계입니다.
 - ![image](https://user-images.githubusercontent.com/76681523/165245860-7e393858-fb95-4afc-be59-f36b72adeac9.png)
   - 처리를 통해 모든 csv 파일에서 계산한 count 값들이 하나로 합쳐졌고, airflow에서  sqlite operator를 통해 result.db로 저장한 뒤 superset에서 저장한 설정값에 따라 자동으로 시각화하 수 있습니다. 
   - 
