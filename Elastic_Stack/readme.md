@@ -1,5 +1,5 @@
 ## filebeat 설정
-** /etc/filebeat/filebeat.yml을 열어 편집합니다.  
+** 우분투20.04 서버 기준 /etc/filebeat/filebeat.yml을 열어 편집합니다.  
   
 Filebeat는 lumberjack 프로토콜(over TCP)을 통해 Logstash(이하 로그스태시)로 다이렉트로 이벤트 전송이 가능합니다.   
 로그스태시를 아웃풋으로 두려면 엘라스틱서치 아웃풋은 사용하지 않아야 합니다. 이를 위해선 아래쪽에 있는 elasticsearch 관련한 설정은 주석처리한 뒤, 아래와 같이 로그스태시 url을 설정하시면 됩니다.    
