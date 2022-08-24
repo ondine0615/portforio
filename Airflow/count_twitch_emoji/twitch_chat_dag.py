@@ -6,7 +6,7 @@ from airflow import DAG
 from airflow.providers.sqlite.operators.sqlite import SqliteOperator
 from airflow.operators.python import PythonOperator
 
-from all_new_twitch import Twitch
+from twitch_chat import Twitch
 
 
 default_args={
@@ -37,19 +37,19 @@ with DAG(
     
     extract = PythonOperator(
         task_id = 'extract',
-        python_callable= extract_from_website
+        python_callable= twitch.extract_from_website
     )
     count_one = PythonOperator(
         task_id = 'count_one',
-        python_callable=emotion_count_one
+        python_callable=twitch.emotion_count_one
     )
     count_all=PythonOperator(
         task_id = 'count_all',
-        python_callable=emotion_count_all
+        python_callable=twitch.emotion_count_all
     )
     concat_csv = PythonOperator(
         task_id='concat_csv',
-        python_callable=concat_all_csv
+        python_callable=twitch.concat_all_csv
     )
     
     store_csv=BashOperator(
