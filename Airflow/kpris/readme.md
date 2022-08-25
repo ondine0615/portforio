@@ -1,5 +1,3 @@
-급하게 수정사항이 생겨 수정, 이후 업로드 
-
 
 ![image](https://user-images.githubusercontent.com/76681523/186073908-635dcbaf-0f24-4ce4-be11-2c91a29856d5.png)
 
