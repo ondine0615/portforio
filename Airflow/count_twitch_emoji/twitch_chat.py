@@ -1,3 +1,6 @@
+import redis
+
+
 import subprocess
 import glob
 import os
@@ -8,6 +11,7 @@ import re
 import requests 
 import selenium
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from pyvirtualdisplay import Display
 import pandas as pd
 display = Display(visible=0, size=(1920, 1080)) 
@@ -16,6 +20,7 @@ display.start()
 
 
 class Twtich(object):
+    rd=redis.StrictRedis(host="127.0.0.1",port=6379,db=1,charset="utf-8",decode_responses=True)
     # VOD의 ID를 추출, 
     def extract_from_website(self):
                     
@@ -23,16 +28,24 @@ class Twtich(object):
         driver = webdriver.Chrome(path)
 
         driver.get("https://www.twitchmetrics.net/c/49045679-woowakgood/videos?sort=published_at-desc")
-        col=driver.find_element_by_class_name("col-9")
-        _href=col.find_element_by_tag_name("a")
-        _href_text=_href.get_attribute("href")
-        _id=_href_text.split('/')[4]
+        #col=driver.find_element_by_class_name("col-9") deprived
+        col = driver.find_element(By.CLASS_NAME, 'col-9')
+        
+        tag_=col.find_element(By.TAG_NAME, 'a')
+        
+        #_href=col.find_element_by_tag_name("a") deprived
+        #link_=_a.get_attribute('href')
+        #_id=_link_.split('/')[4]
 
-        time=driver.find_element_by_class_name("time_ago")
+        link_=tag_.get_attribute('href')
+        href_=link_.split('/')[-1] ##1594329272
+
+        #time=driver.find_element_by_class_name("time_ago")
+        time=driver.find_element(By.CLASS_NAME, "time_ago")
         _date=time.get_attribute("datetime")
         broad_day=_date.split('T')[0]
 
-        subprocess.run(f"/home/ondine0615/workplace/chat-log/data/TwitchDownloaderCLI -m ChatDownload --id {_id} --timestamp-format Relative -o {broad_day}.txt",shell=True)
+        subprocess.run(f"/home/ondine0615/workplace/chat-log/data/TwitchDownloaderCLI -m ChatDownload --id {href_} --timestamp-format Relative -o {broad_day}.txt",shell=True)
     
     def emontion_count_one(self):
         # 수집
@@ -51,7 +64,7 @@ class Twtich(object):
         # preprocess
         wak_count=[]
         wak=re.compile("wak[a-zA-Z0-9]*")
-        #wak=re.compile("wak.*")
+        
         for chat in chat_data_line_split:
             find_wak=wak.findall(chat)
             if len(find_wak)==0: # 이모티콘을 사용하지 않은 채팅 내역은 배제한다. 
@@ -105,6 +118,7 @@ class Twtich(object):
             
     def emotion_count_all(self):
         
+        redis_=self.rd()
         path="/home/ondine0615/workplace/chat-log/data"
         file_list=os.listdir(path)
         file_list_text=[file for file in file_list if file.endswith(".txt")]
@@ -162,29 +176,37 @@ class Twtich(object):
             for v in emotes_list:
                 if emotes_dict.get(v): emotes_dict[v] +=1
                 else: emotes_dict[v]=1
-            emotes_df = pd.DataFrame.from_dict(emotes_dict, orient='index')
-            emotes_df=emotes_df.T
-
-            # 저장
-            csv_name=text.split('.')[0]
-            emotes_df.to_csv("/home/ondine0615/airflow/twitch_csv2/{}.csv".format(csv_name),encoding='UTF-8')
             
-            chat_data.close()
+            for emotes in emotes_dict:
+                redis_.delete(f'{emotes}',emotes_dict[f'{emotes}'])
+                redis_.sadd(f'{emotes}',emotes_dict[f'{emotes}'])
+            
+            
+            
+            
+            # emotes_df = pd.DataFrame.from_dict(emotes_dict, orient='index')
+            # emotes_df=emotes_df.T
+
+            # # 저장
+            # csv_name=text.split('.')[0]
+            # emotes_df.to_csv("/home/ondine0615/airflow/twitch_csv2/{}.csv".format(csv_name),encoding='UTF-8')
+            
+            # chat_data.close()
     
     
     
-    def concat_all_csv(self):
+    # def concat_all_csv(self):
 
-        files_2=os.path.join("/home/ondine0615/airflow/twitch_csv2/*.csv")
-        files_list_2=glob.glob(files_2)
+    #     files_2=os.path.join("/home/ondine0615/airflow/twitch_csv2/*.csv")
+    #     files_list_2=glob.glob(files_2)
 
-        df_3=pd.concat(map(pd.read_csv, files_list_2),ignore_index=True,sort=False)
-        df_3=df_3.fillna('0')
-        df_3=df_3.astype(int)
-        df_3=df_3.drop("Unnamed: 0",axis=1)
+    #     df_3=pd.concat(map(pd.read_csv, files_list_2),ignore_index=True,sort=False)
+    #     df_3=df_3.fillna('0')
+    #     df_3=df_3.astype(int)
+    #     df_3=df_3.drop("Unnamed: 0",axis=1)
 
-        df_sum=df_3.sum().sort_index()
-        df_sum.to_csv("/home/ondine0615/workplace/chat-log/csv/df_sum.csv",header=False)
+    #     df_sum=df_3.sum().sort_index()
+    #     df_sum.to_csv("/home/ondine0615/workplace/chat-log/csv/df_sum.csv",header=False)
         
         
     

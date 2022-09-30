@@ -12,7 +12,7 @@ import redis
 
 class Kipris(object):
     def __init__(self, task_id=None):
-        self.rd = redis.StrictRedis(host='192.168.0.13',port=6379, db=2)
+        self.rd = redis.StrictRedis(host='127.0.0.1',port=6379, db=2)
         
         self.connect_mysql = {
             'host': '192.168.0.13',
@@ -33,7 +33,9 @@ class Kipris(object):
                 'task_id' : "registrationInfo",
                 'request_url':'http://plus.kipris.or.kr/openapi/rest/RegistrationService/',
                 'params':['registrationNumber','accessKey'],
-                'type_':'reg'
+                'type_':'reg',
+                'key' : 'accessKey',
+                'date':'transferDate'
                 }]
         self.lastRightHolder_delete_query = '''
                 DELETE FROM LAST_RIGHT_HOLDER WHERE REGISTRATION_NUMBER IN (%s)
@@ -45,7 +47,7 @@ class Kipris(object):
     def get_list(self, type_, date=None, just_check=False):
         list_service=self.list_services()
         redis_=self.rd()
-        work_date=list(redis_.smembers("worK_date"))
+        work_date=list(redis_.smembers("work_date"))
         
         params={}
         
