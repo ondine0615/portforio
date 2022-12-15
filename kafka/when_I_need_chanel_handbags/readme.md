@@ -31,7 +31,8 @@
 #### 처리 결과
 
 - 처리 과정
-- ![image](https://user-images.githubusercontent.com/76681523/207798018-d871ea54-be15-42ae-98dd-ee6cfaaff399.png)
+- ![image](https://user-images.githubusercontent.com/76681523/207798475-e27facef-01ee-4388-a918-77f47d8a7e3a.png)
+
 
 - 처리결과(db적재)
 - ![image](https://user-images.githubusercontent.com/76681523/207798172-78b132b1-3d06-46b1-ab49-5b28b66579f7.png)
