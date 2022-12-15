@@ -6,7 +6,7 @@ import time
 
 URL = "https://cafe.naver.com/ArticleList.nhn?search.clubid=10050146&search.menuid=334&search.boardtype=L"
 my_arr = []  # 여태까지 확인한 모든 게시물 목록
-is_first = True
+#is_first = True
 target = ["삼성", "갤럭시북", "LG", "gram", "엘지", "그램"]  # 1개라도 포함되야함
 excepts = ["삽니다", "매입", "구매", "구입"]  # 1개라도 포함되면 안됨
 
