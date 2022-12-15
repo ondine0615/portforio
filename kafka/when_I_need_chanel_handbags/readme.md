@@ -1,6 +1,5 @@
 
-
-![image](https://user-images.githubusercontent.com/76681523/193437776-0d2b72ec-20f2-412a-9f6f-26e62c7b9268.png)
+ ![image](https://user-images.githubusercontent.com/76681523/207795887-6ed61a30-ba16-4a6a-a576-713d5cdbc0c6.png)
 
 
 - 중고나라 명품가방 게시판에 올라오는 게시물을 실시간으로 각 브랜드에 맞는 테이블로 정보를 적재하는 형식
