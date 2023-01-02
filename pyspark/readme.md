@@ -1,5 +1,5 @@
 - 과거 15년도 L-members 대회에서 사용한 데이터입니다. K-training 과정 실습 중 얻게되었고, 이번 기회에 pyspark를 이용한 분석에 다시 사용하게 되었습니다. 다만 데이터의 제공한 곳과 학원의 계약에 따라 올리지 못한 파일들이 일부 존재합니다. 
-  - 고객 정보 데이터, L-membership 데이터, 경쟁사 데이터, 구매데이터
+  - 사용 데이터: 고객정보, L-membership, 경쟁사, 고객구매 
 
 # 문제의식                                                                                                                                                                                                                                             
 ![image](https://user-images.githubusercontent.com/76681523/210190286-e0b14c52-8293-45a3-96ac-72219a00c143.png)
