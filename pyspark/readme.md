@@ -2,7 +2,8 @@
   - 고객 정보 데이터, L-membership 데이터, 경쟁사 데이터, 구매데이터
 
 # 문제의식
-![image](https://user-images.githubusercontent.com/76681523/210190286-e0b14c52-8293-45a3-96ac-72219a00c143.png){:width="50" height="50"}
+<img src="https://user-images.githubusercontent.com/76681523/210190286-e0b14c52-8293-45a3-96ac-72219a00c143.png" "width="40%">
+![image](https://user-images.githubusercontent.com/76681523/210190286-e0b14c52-8293-45a3-96ac-72219a00c143.png width="40%"){:width="50" height="50"}
 - 14년-15년에 있었던 전체적인 소비자 수 감소
 
 # 탐색과정
