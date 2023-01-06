@@ -226,10 +226,10 @@ class Kipris(object):
         for services in self.searchtype_services:
             target_url=f"{services.url}/{services.task_id}?transferDate={services.date}&searchType={services.searchType}&accessKey={services.key}"
             #1. 데이터를 가지고 오는 단계
-            content_dict=self.item_check(target_url,low_level=True)
+            content_dict=self.item_check(target_url)
             sleep(1)
             #print(content_dict)
-            print(content_dict['registrationTransferListInfo'].keys())
+            print(content_dict['registrationTransferListInfo'])
             print(len((content_dict['registrationTransferListInfo'].keys())))
             # 데이터 검증단계 
             transferCount='0'
@@ -298,8 +298,8 @@ class Kipris(object):
         number_check = None
         while True:
             number = self.redis.spop(list_name) # key가 reg_working인 data를 하나씩 뽑아 씀. 
-            if not number:
-                break
+            #if not number:
+            #    break
             if number != number_check: # 당연히 같지 않다. 
                 if list_type=='reg':
                     self.registration(number)
@@ -312,9 +312,7 @@ class Kipris(object):
             if duration < 0.5:
                 time.sleep(0.5 - duration)
         self.post_many(flush=True)
-    
-    
-    #http://plus.kipris.or.kr/openapi/rest/RegistrationService/registrationInfo?registrationNumber=2000642310000&accessKey=write your key
+        print('process working complete')
     
     
     # 등록사항 data input
@@ -359,7 +357,7 @@ class Kipris(object):
             if type(content['registrationLastRightHolderInfo']) is not list:
                 last_info = list(content['registrationLastRightHolderInfo'].values())
             else:
-                last_info= [list(orddict.values) for orddict in content['registrationLastRightHolderInfo']]
+                last_info= [list(orddict.values()) for orddict in content['registrationLastRightHolderInfo']]
             if type(content['registrationRightRankInfo']) is not list:
                 rank_info= list(content['registrationRightRankInfo'].values())
             else:
@@ -369,14 +367,20 @@ class Kipris(object):
             else:
                 fee_info=[list(orddict.values()) for orddict in content['registrationFeeInfo']]
             if type(content['registrationRightHolderInfo']['registrationRightHolderInfoA'] is not list):
-                right_a=list(content['registrationRightHolderInfo']['registrationRightHolderInfoA'].values())
+                right_a=list(content['registrationRightHolderInfo']['registrationRightHolderInfoA'])
             else:
                 right_a=[list(orddict.values()) for orddict in content['registrationRightHolderInfo']['registrationRightHolderInfoA']]
             if type(content['registrationRightHolderInfo']['registrationRightHolderInfoB']) is not list:
                 right_b=list(content['registrationRightHolderInfo']['registrationRightHolderInfoB'])
             else:
-                right_b=[list(orddict.values()) for orddict in content['registrationRightHolderInfo']['registrationRightHolderInfoB'].values()]
-        except:
+                right_b=[list(orddict.values()) for orddict in content['registrationRightHolderInfo']['registrationRightHolderInfoB']]
+            self.post_many('reg_right_a',right_a)
+            self.post_many('reg_right_b',right_b)
+            self.post_many('reg_rank',rank_info)
+            self.post_many('reg_fee',fee_info)
+            self.post_many('reg_last',last_info)
+            print("complete")
+        except ValueError:
             print('something wrong in content_values')
             
 
@@ -438,16 +442,16 @@ class Kipris(object):
                 tries+1
                 sleep(3)
                     
-    def add_info(self,responses,number=None,only_none=False):
+    def add_info(self,orddict,number=None,only_none=False):
         if not only_none:
-            responses['number'] = number
-            responses['date'] = list(self.redis.smembers("work_date"))[0]
+            orddict['number'] = number
+            orddict['date'] = list(self.redis.smembers("work_date"))[0]
             
-        for response in responses.items():
+        for response in orddict.items():
             if response[1]==None:
                 if (response[0] == 'trialNumberr') | (response[0] == 'registrationNumber'):
-                    responses[f'{response[0]}'] = 'N/A'
-                responses[f'{response[0]}'] = ''
+                    orddict[f'{response[0]}'] = 'N/A'
+                orddict[f'{response[0]}'] = ''
 
         
 
@@ -457,32 +461,22 @@ class Kipris(object):
     # data information setting
     
     # data xml input 
-    def item_check(self,url,low_level=False):
+    def item_check(self,url):
         try:
             request_get=requests.get(url)
             content_xml=request_get.content
-            
-            xd=xmltodict.parse(content_xml)
-            xd_response=list(xd)[0]
-            xd_res=xd[f'{xd_response}']
-            xd_bd=list(xd_res)[0]
-            xd_body=xd_res[f'{xd_bd}']
-            xd_item=list(xd_body)[0]
-            content=xd_body[f'{xd_item}']
-            
-            #key_name=list(xmltodict.parse(content_xml)['response']['body'])[0]
-            #content=xmltodict.parse(content_xml)['response']['body'][f'{key_name}']
+            body=list(xmltodict.parse(content_xml)['response']['body'])[0]
+            content=xmltodict.parse(content_xml)['response']['body'][f'{body}']
             
             if content is None:
-                return []
+                print("data is None")
             else:
-                if low_level:
-                    return content 
-                # low_level이 True인 경우, ['body]['*']['*']까지만 진입
                 detail_name=list(content)[0]
                 content=content[detail_name]
                 return content
-                # low_level이 false인 경우, ['body']['*']['*']['*']까지 진입
+                    
+                
+                    
         except:
             print("item_check process error")
 
@@ -519,7 +513,23 @@ class Kipris(object):
                 tries +=1
                 sleep(5)
     
-    def post_many(self,flush=False):
+    def post_many(self,flush=False,target=None,data=None):
+        if not flush:
+            if target not in self._many.keys():
+                if isinstance(data, list):
+                    if isinstance(data[0], list):
+                        self._many[target]=data
+                    else:
+                        print('post_many processing error')
+                else:
+                    print('post_many data type error')
+            else:
+                print('post_many target processing error')
+            if len(self._many[target]) ==100:
+                self.post_db(self.match_info[target][0], self._many[target],self.match_info[target][1])
+                self._many.pop(target)
+                print('db insert complete, delete info...')
+        
         if flush:
             for _key in sorted(self._many.keys()):
                 try:
@@ -532,5 +542,6 @@ if __name__ == '__main__':
     run = Kipris()
     #logging.debug('debug')
     #logging.info('info')
+    print(run.get_searchtype())
     print(run.process_working('reg'))
     #print(run.get_searchtype())

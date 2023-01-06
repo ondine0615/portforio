@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import redis
 import pendulum
 
-from pyFiles.kipris_scp import Kipris
+from pyFiles.kipris import Kipris
 
 local_tz =pendulum.timezone('Asia/Seoul')
 
