@@ -1,5 +1,5 @@
 
-# 기능 추가중입니다.
+# 기능 추가중인 항목입니다. (등록번호 -> 등록&출원번호에 의한 정보 저장)
 
 ![image](https://user-images.githubusercontent.com/76681523/186073908-635dcbaf-0f24-4ce4-be11-2c91a29856d5.png)
 
