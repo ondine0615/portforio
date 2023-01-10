@@ -58,3 +58,5 @@ reg_working=PythonOperator(
     python_callable=kipris.process_working,
     dag=kipris_delta1day
 )
+
+init_woring >> reg_union >> reg_working

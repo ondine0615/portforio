@@ -24,7 +24,7 @@ class Kipris(object):
             'host' : '127.0.0.1',
             'port' : 3306,
             'user': 'root',
-            'password':'rotin11',
+            'password':'123',
             'database': "KIPRIS"
         }
         # mysql_patent_database(출원번호 기반; 예정)
@@ -33,7 +33,7 @@ class Kipris(object):
             'host':'127.0.0.1',
             'port': 3306,
             'user': 'root',
-            'password': 'rotin11',
+            'password': '123',
             'database': 'patent'
         }
         
@@ -229,8 +229,8 @@ class Kipris(object):
             content_dict=self.item_check(target_url)
             sleep(1)
             #print(content_dict)
-            print(content_dict['registrationTransferListInfo'])
-            print(len((content_dict['registrationTransferListInfo'].keys())))
+            #print(content_dict['registrationTransferListInfo'])
+            #print(len((content_dict['registrationTransferListInfo'].keys())))
             # 데이터 검증단계 
             transferCount='0'
             tmpList=[]
@@ -271,14 +271,14 @@ class Kipris(object):
                 self.redis.sadd(f'{services.type}_working',number)
                 
                 ##########이 부분 해결해야 함 ###################
-                app_num=self.get_db(self.app_from_reg, self.conn_data_patent, number)
+                # app_num=self.get_db(self.app_from_reg, self.conn_data_patent, number)
                 
-                if not len(app_num):
-                    continue
+                # if not len(app_num):
+                #     continue
                 
-                tmp_app_list.append(app_num[0][0])
-                for app_num in tmp_app_list:
-                   self.redis.sadd("app_working",app_num)
+                # tmp_app_list.append(app_num[0][0])
+                # for app_num in tmp_app_list:
+                #    self.redis.sadd("app_working",app_num)
 
     def process_working(self, list_type, other=None,err_date=None):
         start = time.time()
@@ -311,6 +311,7 @@ class Kipris(object):
             duration = time.time() - start
             if duration < 0.5:
                 time.sleep(0.5 - duration)
+            self.post_many(flush=True)
         self.post_many(flush=True)
         print('process working complete')
     
@@ -379,6 +380,7 @@ class Kipris(object):
             self.post_many('reg_rank',rank_info)
             self.post_many('reg_fee',fee_info)
             self.post_many('reg_last',last_info)
+            self.post_many('reg_update',[number, list(self.redis.smembers('work_date'))[0]])
             print("complete")
         except ValueError:
             print('something wrong in content_values')
@@ -392,12 +394,13 @@ class Kipris(object):
        #----------------------------------------------------------------------                
        # mysql connection setting
        
-    def get_db(self,conn_data,query,commit=False,retry=24):
-        conn=pymysql.connect(host=conn_data['host'],
-                             port=conn_data['port'],
-                             user=conn_data['user'],
-                             password=conn_data['password'],
-                             database=conn_data['database'],
+    def get_db(self,query,commit=False,retry=24):
+        tries=0
+        conn=pymysql.connect(host=self.conn_data['host'],
+                             port=self.conn_data['port'],
+                             user=self.conn_data['user'],
+                             password=self.conn_data['password'],
+                             database=self.conn_data['database'],
                              connect_timeout=60
                              )
         try:
@@ -419,11 +422,11 @@ class Kipris(object):
                 
             try:
                 conn=pymysql.connect(
-                    host=conn_data['host'],
-                    port=conn_data['port'],
-                    user=conn_data['user'],
-                    password=conn_data['password'],
-                    database=conn_data['database'],
+                    host=self.conn_data['host'],
+                    port=self.conn_data['port'],
+                    user=self.conn_data['user'],
+                    password=self.conn_data['password'],
+                    database=self.conn_data['database'],
                     connect_timeout=60        
                     )
                 with conn.cursor() as curs:
