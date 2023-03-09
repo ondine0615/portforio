@@ -1,7 +1,7 @@
 import psycopg2
 
 conn = psycopg2.connect(
-    database="OSLO_CITY_Bike", user='postgres', password='password', host='127.0.0.1', port= '5432'
+    database="oslo_city_bike", user='postgres', password='rotin11', host='127.0.0.1', port= '5432'
 )
 
 cursor = conn.cursor()

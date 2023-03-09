@@ -43,20 +43,20 @@ kipris_delta1day=DAG(
     max_active_runs=1,
     schedule=timedelta(days=1)
 )
-init_woring=PythonOperator(
+init_working=PythonOperator(
     task_id="init_working",
     python_callable=init_date,
     dag=kipris_delta1day
 )
-reg_union=PythonOperator(
-    task_id='reg_union',
+get_searchtype=PythonOperator(
+    task_id='get_searchtype',
     python_callable=kipris.get_searchtype,
     dag=kipris_delta1day
 )
-reg_working=PythonOperator(
-    task_id='reg_working',
+process_working=PythonOperator(
+    task_id='process_working',
     python_callable=kipris.process_working,
     dag=kipris_delta1day
 )
 
-init_woring >> reg_union >> reg_working
+init_working >> get_searchtype >> process_working

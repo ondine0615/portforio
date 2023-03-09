@@ -14,4 +14,5 @@ for i in range(120): #60 Minutes
     response = requests.get('https://gbfs.urbansharing.com/oslobysykkel.no/station_status.json', headers=headers)
     r = response.json()
     producer.send('test', value=r)
+    print(r)
     sleep(30)

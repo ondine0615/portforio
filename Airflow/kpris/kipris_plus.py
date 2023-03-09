@@ -18,7 +18,8 @@ class Kipris(object):
         # DB setting
             # redis
         self.redis=redis.StrictRedis(host='127.0.0.1',port=6379,db=3,decode_responses=True)
-        self.api_key = "Y74vSqogy7fkw71F26g146N4s9Harc7sLqm4ONkWHWE="
+        self.api_key_ = "Y74vSqogy7fkw71F26g146N4s9Harc7sLqm4ONkWHWE="
+        self.api_key = "S5sUeUcewvE0=dLF=a9IKgK72zEAvD5bkiPciv4BIEU="
         #mysql_reg_database(등록번호 기반)
         self.conn_data = {
             'host' : '127.0.0.1',
@@ -94,9 +95,8 @@ class Kipris(object):
         VALUES (%s, %s, %s, %s, %s,%s, %s)
         ON DUPLICATE KEY UPDATE
             RANK_CORRELATOR_NAME = VALUES(RANK_CORRELATOR_NAME),
-            RANK_CORRELATOR_ADDRESS= VALUES(RANK_CORELATOR_ADDRESS),
-            TRANSFER_DATE=VALUES(TRANSFER_DATE),
-            MOD_DT=SYSDATE()
+            RANK_CORRELATOR_ADDRESS= VALUES(RANK_CORRELATOR_ADDRESS),
+            TRANSFER_DATE=VALUES(TRANSFER_DATE)      
         """
         self.rightHolderB_query="""
         INSERT INTO REGISTRATION_RIGHT_HOLDER_B (
@@ -113,9 +113,8 @@ class Kipris(object):
             DOCUMENT_NAME = VALUES(DOCUMENT_NAME),
             RECEIPT_DATE = VALUES(RECEIPT_DATE),
             REGISTRATION_CAUSE_NAME = VALUES(REGISTRATION_CAUSE_NAME),
-            INDICATION_OF_EVENT = VALUES(INDICATION_OF_EVENT),
-            TRANSFER_DATE = VALUES(TRANSFER_DATE),
-            MOD_DT=SYSDATE()
+            INDECATION_OF_EVENT = VALUES(INDECATION_OF_EVENT),
+            TRANSFER_DATE = VALUES(TRANSFER_DATE)
         """
         
         self.rightRank_query = """
@@ -161,7 +160,7 @@ class Kipris(object):
         , LATEST_RENEWAL_DATE_MD = VALUES(LATEST_RENEWAL_DATE_MD)
         , SUB_DESIGNATION_DATE_MD = VALUES(SUB_DESIGNATION_DATE_MD)
         , TRANSFER_DATE = VALUES(TRANSFER_DATE)
-        , MOD_DT = SYSDATE()
+
         """
         self.rightholder_info = '''
         INSERT INTO RIGHT_HOLDER (
@@ -188,14 +187,14 @@ class Kipris(object):
             , RANK_CORRELATOR_NUMBER = VALUES(RANK_CORRELATOR_NUMBER)
             , REGISTRATION_DATE = VALUES(REGISTRATION_DATE)
             , TRANSFER_DATE = VALUES(TRANSFER_DATE)
-            , MOD_DT = SYSDATE()
+    
         '''
         self.registrationFee_query = '''
         INSERT INTO REGISTRATION_FEE (
             REGISTRATION_DATE
             , START_ANNUAL
             , LAST_ANNUAL
-            , PAYMENT_DEGREE
+            , ENT_DEGREE
             , PAYMENT_FEE
             , PAYMENT_DATE
             , REGISTRATION_NUMBER
@@ -205,18 +204,96 @@ class Kipris(object):
         ON DUPLICATE KEY UPDATE
             START_ANNUAL = VALUES(START_ANNUAL)
             , LAST_ANNUAL = VALUES(LAST_ANNUAL)
-            , PAYMENT_DEGREE = VALUES(PAYMENT_DEGREE)
+            , ENT_DEGREE = VALUES(ENT_DEGREE)
             , PAYMENT_FEE = VALUES(PAYMENT_FEE)
             , PAYMENT_DATE = VALUES(PAYMENT_DATE)
             , TRANSFER_DATE = VALUES(TRANSFER_DATE)
-            , MOD_DT = SYSDATE()
+    
         ''' 
+        self.lastRightHolder_insert_query = '''
+        INSERT INTO LAST_RIGHT_HOLDER (
+            LAST_RIGHT_HOLDER_NUMBER
+            , LAST_RIGHT_HOLDER_NAME
+            , LAST_RIGHT_HOLDER_ADDRESS
+            , LAST_RIGHT_HOLDER_COUNTRY
+            , REGISTRATION_NUMBER
+            , TRANSFER_DATE
+        ) VALUES (%s,%s,%s,%s,%s,%s)
+        '''
+        self.lastRightHolder_delete_query = '''
+        DELETE FROM LAST_RIGHT_HOLDER WHERE REGISTRATION_NUMBER IN (%s)
+        '''
+        self.registration_idc_query = '''
+        INSERT INTO KIPO_ADMIN_REG_BS (
+            registerNumber
+            , registerationDate
+            , examinationDate
+            , existDuringDate
+            , lapsCause
+            , lapsDate
+            , applicationNumber
+            , applicationDate
+            , publicationNumber
+            , publicationDate
+            , internationRegistrationNumber
+            , internationRegistrationDate
+            , originalApplicationNumber
+            , originalApplicationDate
+            , classificationCode
+            , inventionTitle
+            , inventionTitleEng
+            , claimCount
+            , priorityCountry
+            , priorityDate
+            , priorityCount
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                ,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                ,%s)
+        ON DUPLICATE KEY UPDATE
+            inventionTitle = VALUES(inventionTitle)
+            , inventionTitleEng = VALUES(inventionTitleEng)
+            , registerationDate = VALUES(registerationDate)
+            , lapsCause = VALUES(lapsCause)
+            , lapsDate = VALUES(lapsDate)
+            , applicationNumber = VALUES(applicationNumber)
+            , applicationDate = VALUES(applicationDate)
+            , publicationNumber = VALUES(publicationNumber)
+            , publicationDate = VALUES(publicationDate)
+            , classificationCode = VALUES(classificationCode)
+            , examinationDate = VALUES(examinationDate)
+            , existDuringDate = VALUES(existDuringDate)
+            , claimCount = VALUES(claimCount)
+            , originalApplicationNumber = VALUES(originalApplicationNumber)
+            , originalApplicationDate = VALUES(originalApplicationDate)
+            , priorityCount = VALUES(priorityCount)
+            , priorityCountry = VALUES(priorityCountry)
+            , priorityDate = VALUES(priorityDate)
+            , internationRegistrationNumber = VALUES(internationRegistrationNumber)
+            , internationRegistrationDate = VALUES(internationRegistrationDate)
+            '''
+        self.registration_update = '''
+            INSERT INTO REG_UPDATE_HISTORY (
+            registration_number
+            , REGISTRATION
+            ) VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE
+            REGISTRATION = VALUES(REGISTRATION)
+        '''
+
+
+
+
+
+
         self.match_info = {
             'right_info': [self.rightholder_info, self.conn_data],
             'reg_fee': [self.registrationFee_query, self.conn_data],
             'reg_rank': [self.rightRank_query, self.conn_data],
-            'reg_rightA': [self.rightHolderA_query, self.conn_data],
-            'reg_rightB': [self.rightHolderB_query, self.conn_data]
+            'reg_right_a': [self.rightHolderA_query, self.conn_data],
+            'reg_right_b': [self.rightHolderB_query, self.conn_data],
+            'reg_last': [self.lastRightHolder_insert_query, self.conn_data],
+            'reg_idc': [self.registration_idc_query, self.conn_data],
+            'reg_update': [self.registration_update, self.conn_data],
         }
         
     # params setting
@@ -225,6 +302,7 @@ class Kipris(object):
         tmp_app_list=[]
         for services in self.searchtype_services:
             target_url=f"{services.url}/{services.task_id}?transferDate={services.date}&searchType={services.searchType}&accessKey={services.key}"
+
             #1. 데이터를 가지고 오는 단계
             content_dict=self.item_check(target_url)
             sleep(1)
@@ -280,21 +358,10 @@ class Kipris(object):
                 # for app_num in tmp_app_list:
                 #    self.redis.sadd("app_working",app_num)
 
-    def process_working(self, list_type, other=None,err_date=None):
+    def process_working(self, list_type):
         start = time.time()
-        list_name= None
-        # 오류 재실행 대비해 만들어 놓은 것.  -> 다른 방법이 없을까? 
-        if other is None:
-            list_name = f'{list_type}_working'
-        else:
-            list_name = other
-        try:
-            error_date = list(self.redis.smembers('work_date'))[0]
-        except:
-            error_date = datetime.datetime.now()-datetime.timedelta(1)
+        list_name= f'{list_type}_working'
         
-        if err_date is not None:
-            error_date = err_date
         number_check = None
         while True:
             number = self.redis.spop(list_name) # key가 reg_working인 data를 하나씩 뽑아 씀. 
@@ -303,87 +370,115 @@ class Kipris(object):
             if number != number_check: # 당연히 같지 않다. 
                 if list_type=='reg':
                     self.registration(number)
-                    #self.registration(number, error_date)
+                    number_check=number # 중복을 방지하기 위해
             else:
+                pass
+            #else:
                 # 원래 이 부분에 출원정보 관련한 코드를 넣으려 했음. 
-                print('something is wrong in working porocess..')
-                continue
+            #    print('something is wrong in working porocess..')
+            #py    continue
             duration = time.time() - start
             if duration < 0.5:
                 time.sleep(0.5 - duration)
             self.post_many(flush=True)
-        self.post_many(flush=True)
-        print('process working complete')
+            #self.post_many(flush=True)
+            print('process working complete')
     
     
     # 등록사항 data input
     
     def registration(self,number):
-        try:
-            basic_url="http://plus.kipris.or.kr/openapi/rest/RegistrationService/"
-            taskId="registrationInfo"
-            reg_number='registrationNumber'
-            #url =f'{basic_url}{taskId}?{reg_number}={number}&accessKey={api_key}'
-            url =f'{basic_url}{taskId}?{reg_number}={number}&accessKey={self.api_key}'
-            
-            content=self.item_check(url)
-            if len(content) !=0:
-                for key,item in content.items():
-                    if key=='regirtrationRightInfo':
-                        if type(item) is not list:
-                            item=[item]
-                        else:
-                            print('registraion_item_check process error')
-                        for _item in item:
-                            self.add_info(_item, only_none=True)              
-        except:
-            print('patent registration content input -> error')
         
+        #try:
+        basic_url="http://plus.kipris.or.kr/openapi/rest/RegistrationService/"
+        taskId="registrationInfo"
+        reg_number='registrationNumber'
+        #url =f'{basic_url}{taskId}?{reg_number}={number}&accessKey={api_key}'
+        url =f'{basic_url}{taskId}?{reg_number}={number}&accessKey={self.api_key}'
+
+        content=self.item_check(url)
+        if len(content) !=0:
+            for key,item in content.items():
+                if key=='registrationRightInfo':
+                    item['date'] = list(self.redis.smembers('work_date'))[0]
+                    self.add_info(item, only_none=True)
+                elif key == 'registrationRightHolderInfo':
+                    if type(item['registrationRightHolderInfoA']) is list:
+                        for _item in item['registrationRightHolderInfoA']:
+                            self.add_info(_item, number)
+                    else:
+                        self.add_info(item['registrationRightHolderInfoA'], number)
+                    if type(item['registrationRightHolderInfoB']) is list:
+                        for _item in item['registrationRightHolderInfoB']:
+                            self.add_info(_item, number)
+                    else:
+                        self.add_info(item['registrationRightHolderInfoB'], number)
+                else:
+                    if type(item) is not list:
+                        item = [item]
+                    for _item in item:
+                        self.add_info(_item, number)
+        #except Exception as e:
+            #print('patent registration content input -->',e)
     # insert ---
-        try:
+        #try:
             
             
-            rank_info=[]
-            last_info=[]
-            fee_info=[]
-            
-            right_info_=list(content['registrationRightInfo'])
-            print(right_info_)
-            right_idc_info=list(content['registrationRightInfo'].values())
-            print(right_idc_info)
-            right_a=[]
-            right_b=[]
-            
-            
-            if type(content['registrationLastRightHolderInfo']) is not list:
-                last_info = list(content['registrationLastRightHolderInfo'].values())
-            else:
-                last_info= [list(orddict.values()) for orddict in content['registrationLastRightHolderInfo']]
-            if type(content['registrationRightRankInfo']) is not list:
-                rank_info= list(content['registrationRightRankInfo'].values())
-            else:
-                rank_info = [list(orddict.values()) for orddict in content['registrationRightRankInfo']]
-            if type(content['registrationFeeInfo']) is not list:
-                fee_info=list(content['registrationFeeInfo'].values())
-            else:
-                fee_info=[list(orddict.values()) for orddict in content['registrationFeeInfo']]
-            if type(content['registrationRightHolderInfo']['registrationRightHolderInfoA'] is not list):
-                right_a=list(content['registrationRightHolderInfo']['registrationRightHolderInfoA'])
-            else:
-                right_a=[list(orddict.values()) for orddict in content['registrationRightHolderInfo']['registrationRightHolderInfoA']]
-            if type(content['registrationRightHolderInfo']['registrationRightHolderInfoB']) is not list:
-                right_b=list(content['registrationRightHolderInfo']['registrationRightHolderInfoB'])
-            else:
-                right_b=[list(orddict.values()) for orddict in content['registrationRightHolderInfo']['registrationRightHolderInfoB']]
-            self.post_many('reg_right_a',right_a)
-            self.post_many('reg_right_b',right_b)
-            self.post_many('reg_rank',rank_info)
-            self.post_many('reg_fee',fee_info)
-            self.post_many('reg_last',last_info)
-            self.post_many('reg_update',[number, list(self.redis.smembers('work_date'))[0]])
-            print("complete")
-        except ValueError:
-            print('something wrong in content_values')
+        rank_info=[]
+        _last_info=[]
+        fee_info=[]
+        right_a=[]
+        right_b=[]
+
+
+        #right_info_=list(content['registrationRightInfo'])
+        #print(right_info_)
+        right_idc_info=list(content['registrationRightInfo'].values())
+        print(right_idc_info)
+        
+        del right_idc_info[1]
+        del right_idc_info[7]
+        del right_idc_info[-1]
+        
+        
+        if type(content['registrationLastRightHolderInfo']) is not list:
+            _last_info = list(content['registrationLastRightHolderInfo'].values())
+        else:
+            _last_info= [list(data.values()) for data in content['registrationLastRightHolderInfo']]
+        
+        if type(content['registrationRightRankInfo']) is not list:
+            rank_info= list(content['registrationRightRankInfo'].values())
+        else:
+            rank_info = [list(data.values()) for data in content['registrationRightRankInfo']]
+        
+        if type(content['registrationFeeInfo']) is not list:
+            fee_info=list(content['registrationFeeInfo'].values())
+        else:
+            fee_info=[list(data.values()) for data in content['registrationFeeInfo']]
+
+        if type(content['registrationRightHolderInfo']['registrationRightHolderInfoA']) is list:
+            right_a = [list(data.values()) for data in content['registrationRightHolderInfo']['registrationRightHolderInfoA']]            
+        else:
+            right_a=list(content['registrationRightHolderInfo']['registrationRightHolderInfoA'].values())
+        #right_a=list(content['registrationRightHolderInfo']['registrationRightHolderInfoA'].values())
+
+        if type(content['registrationRightHolderInfo']['registrationRightHolderInfoB']) is list:
+            right_b = [list(data.values()) for data in content['registrationRightHolderInfo']['registrationRightHolderInfoB']]
+        else:
+            right_b = list(content['registrationRightHolderInfo']['registrationRightHolderInfoB'].values())
+             
+        
+        self.post_many('reg_right_a',right_a) # target, data
+        self.post_many('reg_right_b',right_b)
+        self.post_many('reg_rank',rank_info)
+        self.post_many('reg_fee',fee_info)
+        self.post_db(self.lastRightHolder_delete_query, number)
+        self.post_many('reg_last',_last_info)
+        self.post_many('reg_idc',right_idc_info)
+        self.post_many('reg_update',[number, list(self.redis.smembers('work_date'))[0]])
+        print("complete")
+        # except ValueError:
+        #     print('something wrong in content_values')
             
 
     
@@ -416,35 +511,6 @@ class Kipris(object):
                 conn.close()
             tries+=1
             sleep(5)
-    def post_db(query, data, conn_data,retry=24,):
-        tries= 0
-        while True:
-                
-            try:
-                conn=pymysql.connect(
-                    host=self.conn_data['host'],
-                    port=self.conn_data['port'],
-                    user=self.conn_data['user'],
-                    password=self.conn_data['password'],
-                    database=self.conn_data['database'],
-                    connect_timeout=60        
-                    )
-                with conn.cursor() as curs:
-                    if (type(data[0]) is list) & (len(data) !=1):
-                        curs.executemany(query, data)
-                    elif (type(data[0]) is list) & (len(data) ==1):
-                        curs.execute(query, data[0])
-                    else:
-                        curs.execute(query, data)
-                conn.close()
-                return True
-            except:
-                if tries==retry:
-                    conn.close()
-                    return False
-                tries+1
-                sleep(3)
-                    
     def add_info(self,orddict,number=None,only_none=False):
         if not only_none:
             orddict['number'] = number
@@ -464,22 +530,29 @@ class Kipris(object):
     # data information setting
     
     # data xml input 
-    def item_check(self,url):
+    def code_check(self, url):
         try:
             request_get=requests.get(url)
             content_xml=request_get.content
             body=list(xmltodict.parse(content_xml)['response']['body'])[0]
             content=xmltodict.parse(content_xml)['response']['body'][f'{body}']
             
-            if content is None:
-                print("data is None")
-            else:
-                detail_name=list(content)[0]
-                content=content[detail_name]
-                return content
-                    
-                
-                    
+            return content
+
+            
+        except:
+            print(' error in api_code check process')
+    
+    def item_check(self,url):
+        
+        try:
+            request_get=requests.get(url)
+            content_xml=request_get.content
+            body=list(xmltodict.parse(content_xml)['response']['body'])[0]
+            content=xmltodict.parse(content_xml)['response']['body'][f'{body}']
+            detail_name=list(content)[0]
+            content=content[detail_name]
+            return content
         except:
             print("item_check process error")
 
@@ -490,61 +563,112 @@ class Kipris(object):
     #             try:
     #                 post_db()
 
-    def post_db(self, query, data, conn_data,commit=True):
+    def post_db(self, query, data):
         tries=0
+        print('post_db 함수 진입')
         while True:
-            try:
-                conn = pymysql.connect(host=conn_data['host'],
-                                       port=conn_data['port'],
-                                       user = conn_data['user'],
-                                       password=conn_data['password'],
-                                       database=conn_data['database'],
-                                       connect_timeout=60)
-                with conn.cursor() as curs:
-                    if (type(data[0]) is list) & (len(data) !=1):
-                        curs.executemany(query,data)
-                    elif (type(data[0]) is list) & (len(data)==1):
-                        curs.execute(query,data)
-                if commit:
-                    conn.commit()
-                conn.close()
-                return True
-            except:
-                if tries ==12:
-                    conn.close()
-                    return False
-                tries +=1
-                sleep(5)
-    
-    def post_many(self,flush=False,target=None,data=None):
+            #try:
+            conn = pymysql.connect(host=self.conn_data['host'],
+                                    port=self.conn_data['port'],
+                                    user = self.conn_data['user'],
+                                    password=self.conn_data['password'],
+                                    database=self.conn_data['database'],
+                                    connect_timeout=60)
+            with conn.cursor() as curs:
+                if (type(data[0]) is list) & (len(data) !=1):
+                    curs.executemany(query,data)
+                elif (type(data[0]) is list) & (len(data)==1):
+                    curs.execute(query,data)
+            #if commit:
+            conn.commit()
+            print('commit 완료')
+            conn.close()
+            sleep(3)
+            return True
+            # except:
+            #     if tries ==2:
+            #         conn.close()
+            #         return False
+            #     tries +=1
+            
+
+
+
+
+    def post_many(self, target=None, data=None, flush=False):
         if not flush:
             if target not in self._many.keys():
-                if isinstance(data, list):
-                    if isinstance(data[0], list):
-                        self._many[target]=data
+                if isinstance(data, (list, tuple)):
+                    if isinstance(data[0], (list, tuple)):
+                        self._many[target] = data
                     else:
-                        print('post_many processing error')
+                        self._many[target] = [data]
                 else:
-                    print('post_many data type error')
+                    self._many[target] = [[data]]
             else:
-                print('post_many target processing error')
-            if len(self._many[target]) ==100:
-                self.post_db(self.match_info[target][0], self._many[target],self.match_info[target][1])
+                if isinstance(data, (list, tuple)):
+                    if isinstance(data[0], (list, tuple)):
+                        self._many[target].extend(data)
+                    else:
+                        self._many[target].append(data)
+                else:
+                    self._many[target].append([data])
+            if len(self._many[target]) == 2:
+                self.post_db(self.match_info[target][0], self._many[target])
                 self._many.pop(target)
-                print('db insert complete, delete info...')
-        
         if flush:
             for _key in sorted(self._many.keys()):
                 try:
-                    self.post_db(self.match_info[_key][0], self._many[_key],self.match_info[_key][1])
+                    self.post_db(self.match_info[_key][0], self._many[_key])
                 except:
                     print(_key)
                     print(self._many[_key])
+ 
+ 
+ 
+ 
+    # def post_many(self,flush=False,target=None,data=None):
+    #     if flush:
+    #         for _key in sorted(self._many.keys()):
+    #             try:
+    #                 self.post_db(self.match_info[_key][0], self._many[_key], self.match_info[_key][1])
+    #             except:
+    #                 print(_key)
+    #                 print(self._many[_key])
+    #     if not flush:
+    #         if target not in self._many.keys():
+    #             if isinstance(data, (list,tuple)):
+    #                 if isinstance(data[0], (list,tuple)):
+    #                     self._many[target]=data
+    #                 else:
+    #                     self._many[target]=[data]
+    #                     #print('post_many processing error')
+    #             else:
+    #                 self._many[target]=[[data]]
+    #                 #print('post_many data type error')
+    #         else:
+    #             print('post_many target processing error')
+    #     if len(self._many[target]) ==5:
+    #         self.post_db(self.match_info[target][0], self._many[target],self.match_info[target][1])
+    #         self._many.pop(target)
+    #         print('db insert complete, delete info...')
+    #     else:
+    #         print('aldsfkjsld')
+    
+        # if flush:
+        #     for _key in sorted(self._many.keys()):
+        #         try:
+        #             self.post_db(self.match_info[_key][0], self._many[_key],self.match_info[_key][1])
+        #         except:
+        #             print(_key)
+        #             print(self._many[_key])
                 
 if __name__ == '__main__':
     run = Kipris()
     #logging.debug('debug')
     #logging.info('info')
-    print(run.get_searchtype())
-    print(run.process_working('reg'))
+    #print(run.get_searchtype())
+    #run.get_searchtype()
+    run.process_working('reg')
+    #print(run.process_working('reg'))
     #print(run.get_searchtype())

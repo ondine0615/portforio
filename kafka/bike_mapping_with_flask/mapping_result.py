@@ -7,9 +7,9 @@ import json
 MAPBOX_ACCESS_KEY = "pk.eyJ1Ijoib25kaW5lMDYxNSIsImEiOiJjbDhwZGljdG0wbnZ3M3ZvZ3lwZWtieThyIn0.Bth2_STTLlVHzduY-47WYQ"
 
 conn = psycopg2.connect(
-    database="OSLO_CITY_Bike",
+    database="oslo_city_bike",
     user='postgres',
-    password='password',
+    password='rotin11',
     host='127.0.0.1',
     port='5432'
 )

@@ -11,7 +11,7 @@ consumer = KafkaConsumer(
      group_id='my-group',
      value_deserializer=lambda x: json.loads(x.decode('utf-8')))
 
-conn = psycopg2.connect( database="OSLO_CITY_Bike", user='postgres', password='password', host='127.0.0.1', port= '5432')
+conn = psycopg2.connect( database="oslo_city_bike", user='postgres', password='rotin11', host='127.0.0.1', port= '5432')
 cursor = conn.cursor()
 
 for message in consumer:
