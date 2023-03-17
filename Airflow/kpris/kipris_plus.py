@@ -1,13 +1,9 @@
-import sys
-import os
 import pymysql
 import xmltodict
 import redis
 import requests
-#from datetime import datetime
 import datetime
 from collections import namedtuple
-import logging
 from time import sleep
 import time
 
@@ -17,17 +13,28 @@ class Kipris(object):
         
         # DB setting
             # redis
-        self.redis=redis.StrictRedis(host='127.0.0.1',port=6379,db=3,decode_responses=True)
+        self.rd=redis.StrictRedis(host='127.0.0.1',port=6379,db=3,decode_responses=True)
         self.api_key_ = "Y74vSqogy7fkw71F26g146N4s9Harc7sLqm4ONkWHWE="
         self.api_key = "S5sUeUcewvE0=dLF=a9IKgK72zEAvD5bkiPciv4BIEU="
         #mysql_reg_database(등록번호 기반)
-        self.conn_data = {
-            'host' : '127.0.0.1',
-            'port' : 3306,
-            'user': 'root',
-            'password':'123',
-            'database': "KIPRIS"
+            
+            
+            # aws mysql
+        self.conn_data={
+            'host':'mysql2.cexkvozhayjs.ap-northeast-2.rds.amazonaws.com',
+            'port': 3306,
+            'user': 'admin',
+            'password':'qweqwe123',
+            'database':'KIPRIS'
         }
+        
+        # self.conn_data_localhost = {
+        #     'host' : '127.0.0.1',
+        #     'port' : 3306,
+        #     'user': 'root',
+        #     'password':'123',
+        #     'database': "KIPRIS"
+        # }
         # mysql_patent_database(출원번호 기반; 예정)
         self.conn_data_patent= None
         {
@@ -306,9 +313,6 @@ class Kipris(object):
             #1. 데이터를 가지고 오는 단계
             content_dict=self.item_check(target_url)
             sleep(1)
-            #print(content_dict)
-            #print(content_dict['registrationTransferListInfo'])
-            #print(len((content_dict['registrationTransferListInfo'].keys())))
             # 데이터 검증단계 
             transferCount='0'
             tmpList=[]
@@ -320,8 +324,7 @@ class Kipris(object):
                 try:
                     transferCount=content_dict[f"{services.task_id}"]['transferCount']
                     tmpList=content_dict[f"{services.task_id}"]['transferList']
-                    #print(transferCount)
-                    #print(tmpList)
+                    
                 except:
                     print('error')
                     
@@ -337,16 +340,16 @@ class Kipris(object):
                 transferList=[number for number in tmpList if number.startswith('10')| number.startswith('20')]
                 
                 for number in transferList:
-                    self.redis.sadd(f"{services.task_id}",number)
+                    self.rd.sadd(f"{services.task_id}",number)
                     #print(number)
             
             if services.type == 'reg':
                 task_id_list.append(services.task_id)
-            union_transferList=self.redis.sunion(task_id_list)
-            self.redis.delete(services.task_id)
+            union_transferList=self.rd.sunion(task_id_list)
+            self.rd.delete(services.task_id)
             
             for number in union_transferList:
-                self.redis.sadd(f'{services.type}_working',number)
+                self.rd.sadd(f'{services.type}_working',number)
                 
                 ##########이 부분 해결해야 함 ###################
                 # app_num=self.get_db(self.app_from_reg, self.conn_data_patent, number)
@@ -364,7 +367,7 @@ class Kipris(object):
         
         number_check = None
         while True:
-            number = self.redis.spop(list_name) # key가 reg_working인 data를 하나씩 뽑아 씀. 
+            number = self.rd.spop(list_name) # key가 reg_working인 data를 하나씩 뽑아 씀. 
             #if not number:
             #    break
             if number != number_check: # 당연히 같지 않다. 
@@ -375,13 +378,13 @@ class Kipris(object):
                 pass
             #else:
                 # 원래 이 부분에 출원정보 관련한 코드를 넣으려 했음. 
-            #    print('something is wrong in working porocess..')
-            #py    continue
+            
+
             duration = time.time() - start
             if duration < 0.5:
                 time.sleep(0.5 - duration)
             self.post_many(flush=True)
-            #self.post_many(flush=True)
+            
             print('process working complete')
     
     
@@ -400,7 +403,7 @@ class Kipris(object):
         if len(content) !=0:
             for key,item in content.items():
                 if key=='registrationRightInfo':
-                    item['date'] = list(self.redis.smembers('work_date'))[0]
+                    item['date'] = list(self.rd.smembers('work_date'))[0]
                     self.add_info(item, only_none=True)
                 elif key == 'registrationRightHolderInfo':
                     if type(item['registrationRightHolderInfoA']) is list:
@@ -475,7 +478,7 @@ class Kipris(object):
         self.post_db(self.lastRightHolder_delete_query, number)
         self.post_many('reg_last',_last_info)
         self.post_many('reg_idc',right_idc_info)
-        self.post_many('reg_update',[number, list(self.redis.smembers('work_date'))[0]])
+        self.post_many('reg_update',[number, list(self.rd.smembers('work_date'))[0]])
         print("complete")
         # except ValueError:
         #     print('something wrong in content_values')
@@ -514,7 +517,7 @@ class Kipris(object):
     def add_info(self,orddict,number=None,only_none=False):
         if not only_none:
             orddict['number'] = number
-            orddict['date'] = list(self.redis.smembers("work_date"))[0]
+            orddict['date'] = list(self.rd.smembers("work_date"))[0]
             
         for response in orddict.items():
             if response[1]==None:

@@ -56,6 +56,7 @@ get_searchtype=PythonOperator(
 process_working=PythonOperator(
     task_id='process_working',
     python_callable=kipris.process_working,
+    op_kwargs={'list_type':'reg'},
     dag=kipris_delta1day
 )
 
