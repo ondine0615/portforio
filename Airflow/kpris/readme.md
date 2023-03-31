@@ -8,8 +8,12 @@
 
 - 특허청의 자회사인 Kipris plus에서 제공하는 api를 airflow를 활용해 필요한 정보들을 mysql에 적재하는 과정을 일부 구현했습니다.
 
+# 프로젝트 구조
+![image](https://user-images.githubusercontent.com/76681523/229028890-e928dee8-e583-4c45-84de-3232282b76b5.png)
+
 
 ## dag 설명
+![image](https://user-images.githubusercontent.com/76681523/229028944-23035cf6-fe14-4569-a82b-97584d63a737.png)
 
 #### init 
 - 실행날짜를 구하며, redis에 해당 날짜를 기반으로 key가 만들어 진 후 과정에 따라 데이터들이 일시적으로 적재됩니다. 
